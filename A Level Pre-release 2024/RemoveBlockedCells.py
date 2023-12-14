@@ -82,7 +82,6 @@ class Puzzle():
                     for Column in range(1, self.__GridSize + 1):
                         CurrentCell = self.__GetCell(Row, Column)
                         NotAllowedSymbols = CurrentCell.GetSymbolsNotAllowed()
-                        print(NotAllowedSymbols)
                         if NotAllowedSymbols != ['']:
                             Locations.append([Row, Column])
                 pattern = self.patternfinder(3, 3)
@@ -91,14 +90,11 @@ class Puzzle():
                         for Column in range(1, self.__GridSize + 1):
                             CurrentCell = self.__GetCell(Row, Column)
                             CurrentCell.resetSymbolsAllowed()
-                        print("Removed all blocked")
                 else:
                     remove = self.checkblockedcellinpattern(Locations, pattern)
-                    print(remove)
-                    for Item in remove:
-                        CurrentCell = self.__GetCell(Item[0], Item[1])
+                    for Coordinate in remove:
+                        CurrentCell = self.__GetCell(Coordinate[0], Coordinate[1])
                         CurrentCell.resetSymbolsAllowed()
-                        print("Removed extra blocked cells with patterns")
                 self.__Score = int(f.readline().rstrip())
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
@@ -108,7 +104,6 @@ class Puzzle():
         NotAllowedBlocked = []
         for Item in Pattern:
             for Location in Locations:
-                print(Location)
                 if Location[0]  >= Item[0] or Location[0] <= Item[0] - 2:
                     if Location[1] <= Item[1] or Location[1] >= Item[1] + 2:
                         NotAllowedBlocked.append(Location)
@@ -145,28 +140,25 @@ class Puzzle():
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
-        Locations = []
+        Locations = []   #start
         for Row in range(1, self.__GridSize + 1):
             for Column in range(1, self.__GridSize + 1):
                 CurrentCell = self.__GetCell(Row, Column)
                 NotAllowedSymbols = CurrentCell.GetSymbolsNotAllowed()
-                print(NotAllowedSymbols)
                 if NotAllowedSymbols != ['']:
                     Locations.append([Row, Column])
-        pattern = self.patternfinder(3, 3)
+            pattern = self.patternfinder(3, 3)
+            print(pattern)
         if pattern == []:
             for Row in range(1, self.__GridSize + 1):
                 for Column in range(1, self.__GridSize + 1):
                     CurrentCell = self.__GetCell(Row, Column)
                     CurrentCell.resetSymbolsAllowed()
-                print("Removed all blocked")
         else:
             remove = self.checkblockedcellinpattern(Locations, pattern)
-            print(remove)
-            for Item in remove:
-                CurrentCell = self.__GetCell(Item[0], Item[1])
+            for Coordinate in remove:
+                CurrentCell = self.__GetCell(Coordinate[0], Coordinate[1])
                 CurrentCell.resetSymbolsAllowed()
-                print("Removed extra blocked cells with patterns")
         print()
         self.DisplayPuzzle()
         print()
@@ -240,7 +232,9 @@ class Puzzle():
                             self.__GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
                             Locations.append([StartRow, StartColumn])
                 except:
+                    print(1)
                     pass
+        print(Locations)
         return Locations
 
     def __GetSymbolFromUser(self):
