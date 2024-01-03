@@ -77,7 +77,7 @@ class Puzzle():
                         for CurrentSymbol in range(1, len(Items)):
                             C.AddToNotAllowedSymbols(Items[CurrentSymbol])
                         self.__Grid.append(C)
-                self.RemoveBlocks()
+                self.RemoveBlocks()   #Removes the correct blocked symbols when puzzle is loaded
                 self.__Score = int(f.readline().rstrip())
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
@@ -116,24 +116,24 @@ class Puzzle():
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
-            for row in range(self.__GridSize, 0, -1):
+            for row in range(self.__GridSize, 0, -1):   #start of removing correct blocked symbols while player attempts puzzle
                 for col in range(1, self.__GridSize + 1):
                     if self.CheckforMatchWithPattern(row, col) == 10:
-                        goodCoordinates.append([row, col])
-            if lastGoodCoordinates != goodCoordinates:
+                        goodCoordinates.append([row, col])   #Find coordinates containing a completed letter
+            if lastGoodCoordinates != goodCoordinates:   #Condition to find if there has been a change in the number of completed letters
                 disappearedCoordinates = []
                 for coordinates in lastGoodCoordinates:
                     if coordinates not in goodCoordinates:
                         disappearedCoordinates.append(coordinates)
             leastx = 6
             greatesty = 0
-            for coordinates in disappearedCoordinates:
+            for coordinates in disappearedCoordinates:   #Find top left corner of the 3x3 grid with the shape
                 if coordinates[0] > greatesty:
                     greatesty = coordinates[0]
                 if coordinates[1] < leastx:
                     leastx = coordinates[1]
             if leastx != 6 and greatesty != 0:
-                symbol = self.findLastSymbol(disappearedCoordinates)
+                symbol = self.findLastSymbol(disappearedCoordinates)   #Find the letter that is no longer completed
                 for row in range(greatesty, greatesty - 3, -1):
                     for col in range(leastx, leastx + 3):
                         cell = self.__GetCell(row, col)
