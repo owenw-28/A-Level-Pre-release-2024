@@ -146,7 +146,6 @@ class Puzzle():
                         for col in range(leastx, leastx + 3):
                             cell = self.__GetCell(row, col)
                             cell.RemoveSymbol(symbol)
-                print(goodCoordinates)
             lastGoodCoordinates = goodCoordinates   #End
         print()
         self.DisplayPuzzle()
