@@ -84,10 +84,14 @@ class Puzzle():
             print("Puzzle not loaded")
 
     def AttemptPuzzle(self):
-        lastGoodCoordinates = []
+        lastGoodCoordinates = []   #Start of removing blocked symbols while attempting puzzle
+        for row in range(self.__GridSize, 0, -1):
+                for col in range(1, self.__GridSize + 1):
+                    if self.CheckforMatchWithPattern(row, col) == 10:
+                        lastGoodCoordinates.append([row, col])
         Finished = False
         while not Finished:
-            goodCoordinates = []
+            goodCoordinates = []   #New
             self.DisplayPuzzle()
             print("Current score: " + str(self.__Score))
             Row = -1
@@ -116,35 +120,40 @@ class Puzzle():
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
-            for row in range(self.__GridSize, 0, -1):   #start of removing correct blocked symbols while player attempts puzzle
+            for row in range(self.__GridSize, 0, -1):   #New
                 for col in range(1, self.__GridSize + 1):
                     if self.CheckforMatchWithPattern(row, col) == 10:
                         goodCoordinates.append([row, col])   #Find coordinates containing a completed letter
-            if lastGoodCoordinates != goodCoordinates:   #Condition to find if there has been a change in the number of completed letters
+            print(lastGoodCoordinates)
+            print(goodCoordinates)
+            if len(lastGoodCoordinates) >= len(goodCoordinates):   #Condition to find if there has been a change in the number of completed letters
                 disappearedCoordinates = []
                 for coordinates in lastGoodCoordinates:
                     if coordinates not in goodCoordinates:
                         disappearedCoordinates.append(coordinates)
-            leastx = 6
-            greatesty = 0
-            for coordinates in disappearedCoordinates:   #Find top left corner of the 3x3 grid with the shape
-                if coordinates[0] > greatesty:
-                    greatesty = coordinates[0]
-                if coordinates[1] < leastx:
-                    leastx = coordinates[1]
-            if leastx != 6 and greatesty != 0:
-                symbol = self.findLastSymbol(disappearedCoordinates)   #Find the letter that is no longer completed
-                for row in range(greatesty, greatesty - 3, -1):
-                    for col in range(leastx, leastx + 3):
-                        cell = self.__GetCell(row, col)
-                        cell.RemoveSymbol(symbol)
-            lastGoodCoordinates = goodCoordinates
+                print(disappearedCoordinates)
+                leastx = 6
+                greatesty = 0
+                for coordinates in disappearedCoordinates:   #Find top left corner of the 3x3 grid with the shape that disappeared
+                    if coordinates[0] > greatesty:
+                        greatesty = coordinates[0]
+                    if coordinates[1] < leastx:
+                        leastx = coordinates[1]
+                if leastx != 6 and greatesty != 0:
+                    symbol = self.findLastSymbol(disappearedCoordinates)   #Find the letter that is no longer completed
+                    print(symbol)
+                    for row in range(greatesty, greatesty - 3, -1):
+                        for col in range(leastx, leastx + 3):
+                            cell = self.__GetCell(row, col)
+                            cell.RemoveSymbol(symbol)
+                print(goodCoordinates)
+            lastGoodCoordinates = goodCoordinates   #End
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
 
-    def RemoveBlocks(self):
+    def RemoveBlocks(self):   #New Function
         for row in range(self.__GridSize, 0, -1):
             for col in range(1, self.__GridSize + 1):
                 cell = self.__GetCell(row, col)
@@ -153,29 +162,24 @@ class Puzzle():
                         symbol = cell.GetNotAllowed()[0]
                         cell.RemoveSymbol(symbol)
 
-    def findLastSymbol(self, coordinates):
-        Xcount = 0
-        Qcount = 0
-        Tcount = 0
+    def findLastSymbol(self, coordinates):   #New Function
+        letterCounts = [['X', 0], ['Q', 0], ['T', 0]]
         for coordinate in coordinates:
             row = coordinate[0]
             column = coordinate[1]
             symbol = self.__GetCell(row, column).GetSymbol()
             if symbol == 'X':
-                Xcount += 1
+                letterCounts[0][1] += 1
             elif symbol == 'Q':
-                Qcount += 1
+                letterCounts[1][1] += 1
             elif symbol == 'T':
-                Tcount += 1
-        if Xcount != 1 and Xcount != 0:
-            letter = 'X'
-        elif Qcount != 1 and Qcount != 0:
-            letter = 'Q'
-        elif Tcount != 1 and Tcount != 0:
-            letter = 'T'
+                letterCounts[2][1] += 1
+        countList = [x[1] for x in letterCounts]
+        greatestCount = max(countList)
+        for x in letterCounts:
+            if x[1] == greatestCount:
+                letter = x[0]
         return letter
-
-
 
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
@@ -275,10 +279,10 @@ class Cell():
         else:
             return self._Symbol
 
-    def GetNotAllowed(self):
+    def GetNotAllowed(self):   #New Function
         return self.__SymbolsNotAllowed
 
-    def RemoveSymbol(self, symbol):
+    def RemoveSymbol(self, symbol):   #New Function
         self.__SymbolsNotAllowed = list(filter(symbol.__ne__, self.__SymbolsNotAllowed))
 
     def IsEmpty(self):
